@@ -64,15 +64,8 @@
 
   function nextStep() {
     if (stepIdx >= steps.length) {
-      // Finished — let cursor blink naturally for ~2s then remove it
-      let ticks = 0;
-      const done = setInterval(() => {
-        render(buf, ticks % 2 === 0);
-        if (++ticks > 7) {
-          clearInterval(done);
-          render(buf, false); // final static state, no cursor
-        }
-      }, 380);
+      // Typing done — cursor stays blinking forever (option B)
+      render(buf, true);
       return;
     }
 
