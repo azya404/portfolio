@@ -161,7 +161,26 @@ window.addEventListener('scroll', () => {
   updateActiveNavLink();
 }, { passive: true });
 
-/* ---- Mobile nav toggle ---- */
+/* ---- Theme toggle (dark / light) ---- */
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+
+// Apply saved preference — defaults to dark if nothing saved
+const savedTheme = localStorage.getItem('theme') || 'dark';
+if (savedTheme === 'light') html.setAttribute('data-theme', 'light');
+
+themeToggle.addEventListener('click', () => {
+  const isLight = html.getAttribute('data-theme') === 'light';
+  if (isLight) {
+    html.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    html.setAttribute('data-theme', 'light');
+    localStorage.setItem('theme', 'light');
+  }
+});
+
+
 navToggle.addEventListener('click', () => {
   const isOpen = navLinks.classList.toggle('open');
   navToggle.setAttribute('aria-expanded', isOpen);
