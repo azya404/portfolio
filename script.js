@@ -46,31 +46,31 @@
   // Steps: string char = type it, -1 = backspace, positive number = pause (ms)
   const steps = [
     // ── Phase 1: nickname first ─────────────────────────────────
-    '<', 'a', 'z', 'y', 'a',             // <azya
-    550,                             // hmm… that's not my real name
-    -1, -1, -1, -1,                     // backspace azya
+    '<', 'a', 'z', 'y', 'a',            // <azya
+    550,                                 // hmm… that's not my real name
+    -1, -1, -1, -1,                      // backspace azya → back to <
 
-    // ── Phase 2: real name ──────────────────────────────────────
-    'h', 'a', 'a', 's', 'y', 'a',        // <haasya
+    // ── Phase 2: real name + dot ─────────────────────────────────
+    'h', 'a', 'a', 's', 'y', 'a', '.',  // <haasya.  (dot included here)
 
-    // ── Phase 3: try university domain ──────────────────────────
-    '.', 'u', 'o', 'f', 'a',            // .uofa
-    600,                            // tempting… but nah
-    -1, -1, -1, -1,                    // backspace uofa
+    // ── Phase 3: try university domain ───────────────────────────
+    'u', 'o', 'f', 'a',                  // .uofa
+    600,                                 // tempting… but nah
+    -1, -1, -1, -1,                      // backspace uofa → back to .
 
-    // ── Phase 4: try country TLD ────────────────────────────────
-    'c', 'a',                        // .ca
-    450,                            // close… still not right
-    -1, -1,                          // backspace ca
+    // ── Phase 4: try country TLD ─────────────────────────────────
+    'c', 'a',                            // .ca
+    450,                                 // close… still not right
+    -1, -1,                              // backspace ca → back to .
 
-    // ── Phase 5: try .ke ───────────────────────────────────────
-    'k', 'e',                    // .ke
-    380,                            // nope
-    -1, -1, -1,                       // backspace ke
+    // ── Phase 5: try .ke ─────────────────────────────────────────
+    'k', 'e',                            // .ke
+    380,                                 // nope
+    -1, -1,                              // backspace ke → back to .
 
-    // ── Phase 6: the right one ──────────────────────────────────
-    'd', 'e', 'v',                    // .dev  ← this is it
-    '/', '>',                        // />
+    // ── Phase 6: the right one ───────────────────────────────────
+    'd', 'e', 'v',                       // .dev  ← this is it
+    '/', '>',                            // />
   ];
 
   let buf = '';
@@ -87,8 +87,8 @@
 
     const step = steps[stepIdx++];
 
-    // Pause marker — wait silently without changing the display
-    if (typeof step === 'number') {
+    // Pause marker (positive numbers only) — wait silently
+    if (typeof step === 'number' && step > 0) {
       setTimeout(nextStep, step);
       return;
     }
