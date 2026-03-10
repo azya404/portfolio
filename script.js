@@ -3,6 +3,150 @@
    script.js — Nav interactions + Animations
    ============================================ */
 
+/* ================================================
+   LOGO TYPEWRITER ANIMATION
+   Each extension has its own color identity:
+     .uofa → UAlberta #007C41 green / #FFDB05 gold (alternating)
+     .ca   → Canadian flag red #D52B1E
+     .ke   → Kenya red #BB0000 / green #006600 per char
+     .dev  → Hacker terminal green #39FF14
+   { phase: N } markers in steps[] switch the color mode.
+   Positive numbers = pause ms. -1 = backspace.
+   ================================================ */
+(function initLogoTyping() {
+  const navLogo = document.getElementById('navLogo');
+  if (!navLogo) return;
+
+  // Per-phase extension color configs
+  const phaseColors = {
+    0: { // .uofa — UAlberta: dot starts green, then alternates gold/green
+      dot: '#007C41',
+      char: (i) => i % 2 === 0 ? '#FFDB05' : '#007C41',
+    },
+    1: { // .ca — Canadian flag: . red, c white, a red (alternating)
+      dot: '#D52B1E',
+      char: (i) => i % 2 === 0 ? '#FFFFFF' : '#D52B1E',
+    },
+    2: { // .ke — Kenya flag order: . black, k red, e green
+      dot: '#111111',
+      char: (i) => i === 0 ? '#BB0000' : '#006600',
+    },
+    3: { // .dev — hacker terminal neon green
+      dot: '#39FF14',
+      char: () => '#39FF14',
+    },
+  };
+
+  let phase = -1; // -1 = name zone, no extension active yet
+
+  function render(buf, showCursor) {
+    const dotIdx = buf.indexOf('.');
+    const slashIdx = buf.indexOf('/');
+    let html = '';
+
+    for (let i = 0; i < buf.length; i++) {
+      const ch = buf[i] === '<' ? '&lt;' : buf[i] === '>' ? '&gt;' : buf[i];
+
+      if (i === 0 || (slashIdx !== -1 && i >= slashIdx)) {
+        // opening < and closing />
+        html += `<span class="logo-bracket">${ch}</span>`;
+
+      } else if (dotIdx !== -1 && i >= dotIdx && phase >= 0 && phaseColors[phase]) {
+        // extension zone — per-phase per-character color
+        const pc = phaseColors[phase];
+        const color = (i === dotIdx) ? pc.dot : pc.char(i - dotIdx - 1);
+        html += `<span style="color:${color};transition:color 0.15s">${ch}</span>`;
+
+      } else {
+        // name zone — plain text
+        html += ch;
+      }
+    }
+
+    if (showCursor) html += '<span class="logo-cursor" aria-hidden="true"></span>';
+    navLogo.innerHTML = html;
+  }
+
+  // Steps: string = type char | -1 = backspace | number > 0 = pause ms | { phase: N } = set color mode
+  const steps = [
+    // ── Phase 1: nickname first ─────────────────────────────────
+    '<', 'a', 'z', 'y', 'a',
+    550,                                 // pause — hmm, not my name
+    -1, -1, -1, -1,                         // backspace azya → back to <
+
+    // ── Phase 2: real name + dot ─────────────────────────────────
+    'h', 'a', 'a', 's', 'y', 'a', '.',         // <haasya.
+
+    // ── Extension 1: .uofa (UAlberta) ────────────────────────────
+    { phase: 0 },                        // dot turns gold, chars go green/gold
+    'u', 'o', 'f', 'a',
+    600,                                 // pause — tempting but nah
+    -1, -1, -1, -1,                         // backspace uofa → back to .
+
+    // ── Extension 2: .ca (Canada) ────────────────────────────────
+    { phase: 1 },                        // dot + chars turn Canadian red
+    'c', 'a',
+    450,                                 // pause — close, still no
+    -1, -1,                               // backspace ca → back to .
+
+    // ── Extension 3: .ke (Kenya) ─────────────────────────────────
+    { phase: 2 },                        // k = Kenya red, e = Kenya green
+    'k', 'e',
+    380,                                 // pause — nope
+    -1, -1,                               // backspace ke → back to .
+
+    // ── Extension 4: .dev — this is the one ──────────────────────
+    { phase: 3 },                        // full hacker green
+    'd', 'e', 'v',
+    '/', '>',
+  ];
+
+  let buf = '';
+  let stepIdx = 0;
+
+  function nextStep() {
+    if (stepIdx >= steps.length) {
+      render(buf, true);
+      const cursorEl = navLogo.querySelector('.logo-cursor');
+      if (cursorEl) cursorEl.classList.add('logo-cursor--resting');
+      return;
+    }
+
+    const step = steps[stepIdx++];
+
+    // Phase change marker — update color mode and re-render immediately
+    if (step && typeof step === 'object' && 'phase' in step) {
+      phase = step.phase;
+      render(buf, true);
+      setTimeout(nextStep, 0);
+      return;
+    }
+
+    // Pause (positive numbers only — -1 must fall through)
+    if (typeof step === 'number' && step > 0) {
+      setTimeout(nextStep, step);
+      return;
+    }
+
+    if (step === -1) {
+      buf = buf.slice(0, -1);
+    } else {
+      buf += step;
+    }
+
+    render(buf, true);
+
+    let delay = 90 + Math.random() * 70;
+    if (step === -1) delay = 65 + Math.random() * 45;
+    if (step === '<') delay = 200;
+
+    setTimeout(nextStep, delay);
+  }
+
+  render('', true);
+  setTimeout(nextStep, 700);
+})();
+
 /* ---- Navbar scroll effect ---- */
 const navbar = document.getElementById('navbar');
 const navToggle = document.getElementById('navToggle');
@@ -17,7 +161,26 @@ window.addEventListener('scroll', () => {
   updateActiveNavLink();
 }, { passive: true });
 
-/* ---- Mobile nav toggle ---- */
+/* ---- Theme toggle (dark / light) ---- */
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+
+// Apply saved preference — defaults to dark if nothing saved
+const savedTheme = localStorage.getItem('theme') || 'dark';
+if (savedTheme === 'light') html.setAttribute('data-theme', 'light');
+
+themeToggle.addEventListener('click', () => {
+  const isLight = html.getAttribute('data-theme') === 'light';
+  if (isLight) {
+    html.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    html.setAttribute('data-theme', 'light');
+    localStorage.setItem('theme', 'light');
+  }
+});
+
+
 navToggle.addEventListener('click', () => {
   const isOpen = navLinks.classList.toggle('open');
   navToggle.setAttribute('aria-expanded', isOpen);
