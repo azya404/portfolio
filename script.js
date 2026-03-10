@@ -5,34 +5,34 @@
 
 /* ================================================
    LOGO TYPEWRITER ANIMATION
-   Sequence: <haasya.co [BS][BS] dev/>
-   Colors applied by buffer position regardless
-   of whether char is correct (typo goes purple too)
+   Colors are content-aware: based on where the dot
+   and slash sit in the buffer at any given moment.
+   Sequence: <azya → <haasya → .uofa → .ca → .ke → .dev/>
+   Number entries in steps[] = explicit pause in ms
    ================================================ */
 (function initLogoTyping() {
   const navLogo = document.getElementById('navLogo');
   if (!navLogo) return;
 
-  // Map buffer index → CSS class for that character zone
-  // Target: < h a a s y a . d e v / >
-  //         0 1 2 3 4 5 6 7 8 9 10 11 12
-  function getClass(pos) {
+  // Color determined by buffer structure, not fixed positions
+  // Before the dot → plain name | dot onward → accent | slash onward → bracket
+  function getClass(buf, pos) {
+    const dotIdx = buf.indexOf('.');
+    const slashIdx = buf.indexOf('/');
     if (pos === 0) return 'logo-bracket'; // <
-    if (pos >= 1 && pos <= 6) return '';              // haasya
-    if (pos >= 7 && pos <= 10) return 'logo-accent';  // .dev
-    if (pos >= 11) return 'logo-bracket'; // />
-    return '';
+    if (slashIdx !== -1 && pos >= slashIdx) return 'logo-bracket'; // />
+    if (dotIdx !== -1 && pos >= dotIdx) return 'logo-accent';  // .ext
+    return '';                                                       // name
   }
 
-  // Build coloured HTML from current buffer + optional blinking cursor element
+  // Render buffer with structural coloring + optional blinking cursor
   function render(buf, showCursor) {
     let html = '';
     let i = 0;
     while (i < buf.length) {
-      const cls = getClass(i);
+      const cls = getClass(buf, i);
       let chunk = '';
-      while (i < buf.length && getClass(i) === cls) {
-        // Escape < and > so they display as literals
+      while (i < buf.length && getClass(buf, i) === cls) {
         const ch = buf[i] === '<' ? '&lt;' : buf[i] === '>' ? '&gt;' : buf[i];
         chunk += ch;
         i++;
@@ -43,57 +43,75 @@
     navLogo.innerHTML = html;
   }
 
-  // Typing sequence — strings are chars to add, -1 means backspace
-  // Story: confidently types <haasya.co … pauses … backspaces … finishes dev/>
+  // Steps: string char = type it, -1 = backspace, positive number = pause (ms)
   const steps = [
-    '<',                   // open bracket
-    'h', 'a', 'a', 's', 'y', 'a', // name
-    '.',                   // dot
-    'c', 'o',               // TYPO: typed .co instead of .dev
-    -1, -1,                // realise mistake, delete 'o' then 'c'
-    'd', 'e', 'v',           // correct extension
-    '/', '>',               // close bracket
-  ];
+    // ── Phase 1: nickname first ─────────────────────────────────
+    '<', 'a', 'z', 'y', 'a',             // <azya
+    550,                             // hmm… that's not my real name
+    -1, -1, -1, -1,                     // backspace azya
 
-  // Index of the last "wrong" character before we start correcting
-  // (step index 9 = 'o', the second typo char)
-  const TYPO_LINGER_IDX = 9;
+    // ── Phase 2: real name ──────────────────────────────────────
+    'h', 'a', 'a', 's', 'y', 'a',        // <haasya
+
+    // ── Phase 3: try university domain ──────────────────────────
+    '.', 'u', 'o', 'f', 'a',            // .uofa
+    600,                            // tempting… but nah
+    -1, -1, -1, -1,                    // backspace uofa
+
+    // ── Phase 4: try country TLD ────────────────────────────────
+    'c', 'a',                        // .ca
+    450,                            // close… still not right
+    -1, -1,                          // backspace ca
+
+    // ── Phase 5: try .ke ───────────────────────────────────────
+    'k', 'e',                    // .ke
+    380,                            // nope
+    -1, -1, -1,                       // backspace ke
+
+    // ── Phase 6: the right one ──────────────────────────────────
+    'd', 'e', 'v',                    // .dev  ← this is it
+    '/', '>',                        // />
+  ];
 
   let buf = '';
   let stepIdx = 0;
 
   function nextStep() {
     if (stepIdx >= steps.length) {
-      // Typing done — keep cursor blinking but switch to slower resting speed
+      // Done — cursor stays, switches to slower resting blink
       render(buf, true);
       const cursorEl = navLogo.querySelector('.logo-cursor');
       if (cursorEl) cursorEl.classList.add('logo-cursor--resting');
       return;
     }
 
-    const step = steps[stepIdx];
-    stepIdx++;
+    const step = steps[stepIdx++];
+
+    // Pause marker — wait silently without changing the display
+    if (typeof step === 'number') {
+      setTimeout(nextStep, step);
+      return;
+    }
 
     if (step === -1) {
-      buf = buf.slice(0, -1); // backspace
+      buf = buf.slice(0, -1);
     } else {
       buf += step;
     }
 
     render(buf, true);
 
-    // Timing — mimic real human typing rhythm
-    let delay = 90 + Math.random() * 70;        // base 90–160 ms
-    if (step === -1) delay = 70 + Math.random() * 50; // backspace faster
-    if (stepIdx === TYPO_LINGER_IDX + 1) delay = 460; // pause after noticing typo
-    if (step === '<' && stepIdx === 1) delay = 180; // slight hesitation at start
+    // Human-like timing
+    let delay = 90 + Math.random() * 70;              // 90–160 ms normal
+    if (step === -1) delay = 65 + Math.random() * 45; // backspace a touch faster
+    if (step === '<') delay = 200;                      // slight pause before first char
 
     setTimeout(nextStep, delay);
   }
 
-  // Show cursor alone first, then start typing after a short settle delay
+  // Show lone cursor, then start the sequence
   render('', true);
-  setTimeout(nextStep, 650);
+  setTimeout(nextStep, 700);
 })();
 
 /* ---- Navbar scroll effect ---- */
