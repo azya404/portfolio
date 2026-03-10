@@ -5,72 +5,100 @@
 
 /* ================================================
    LOGO TYPEWRITER ANIMATION
-   Colors are content-aware: based on where the dot
-   and slash sit in the buffer at any given moment.
-   Sequence: <azya → <haasya → .uofa → .ca → .ke → .dev/>
-   Number entries in steps[] = explicit pause in ms
+   Each extension has its own color identity:
+     .uofa → UAlberta #007C41 green / #FFDB05 gold (alternating)
+     .ca   → Canadian flag red #D52B1E
+     .ke   → Kenya red #BB0000 / green #006600 per char
+     .dev  → Hacker terminal green #39FF14
+   { phase: N } markers in steps[] switch the color mode.
+   Positive numbers = pause ms. -1 = backspace.
    ================================================ */
 (function initLogoTyping() {
   const navLogo = document.getElementById('navLogo');
   if (!navLogo) return;
 
-  // Color determined by buffer structure, not fixed positions
-  // Before the dot → plain name | dot onward → accent | slash onward → bracket
-  function getClass(buf, pos) {
+  // Per-phase extension color configs
+  const phaseColors = {
+    0: { // .uofa — UAlberta green & gold alternating per character
+      dot: '#FFDB05',
+      char: (i) => i % 2 === 0 ? '#007C41' : '#FFDB05',
+    },
+    1: { // .ca — Canadian flag red
+      dot: '#D52B1E',
+      char: () => '#D52B1E',
+    },
+    2: { // .ke — Kenya: k = red, e = green
+      dot: '#aaaaaa',
+      char: (i) => i === 0 ? '#BB0000' : '#006600',
+    },
+    3: { // .dev — hacker terminal neon green
+      dot: '#39FF14',
+      char: () => '#39FF14',
+    },
+  };
+
+  let phase = -1; // -1 = name zone, no extension active yet
+
+  function render(buf, showCursor) {
     const dotIdx = buf.indexOf('.');
     const slashIdx = buf.indexOf('/');
-    if (pos === 0) return 'logo-bracket'; // <
-    if (slashIdx !== -1 && pos >= slashIdx) return 'logo-bracket'; // />
-    if (dotIdx !== -1 && pos >= dotIdx) return 'logo-accent';  // .ext
-    return '';                                                       // name
-  }
-
-  // Render buffer with structural coloring + optional blinking cursor
-  function render(buf, showCursor) {
     let html = '';
-    let i = 0;
-    while (i < buf.length) {
-      const cls = getClass(buf, i);
-      let chunk = '';
-      while (i < buf.length && getClass(buf, i) === cls) {
-        const ch = buf[i] === '<' ? '&lt;' : buf[i] === '>' ? '&gt;' : buf[i];
-        chunk += ch;
-        i++;
+
+    for (let i = 0; i < buf.length; i++) {
+      const ch = buf[i] === '<' ? '&lt;' : buf[i] === '>' ? '&gt;' : buf[i];
+
+      if (i === 0 || (slashIdx !== -1 && i >= slashIdx)) {
+        // opening < and closing />
+        html += `<span class="logo-bracket">${ch}</span>`;
+
+      } else if (dotIdx !== -1 && i >= dotIdx && phase >= 0 && phaseColors[phase]) {
+        // extension zone — per-phase per-character color
+        const pc = phaseColors[phase];
+        const color = (i === dotIdx) ? pc.dot : pc.char(i - dotIdx - 1);
+        html += `<span style="color:${color};transition:color 0.15s">${ch}</span>`;
+
+      } else {
+        // name zone — plain text
+        html += ch;
       }
-      html += cls ? `<span class="${cls}">${chunk}</span>` : chunk;
     }
+
     if (showCursor) html += '<span class="logo-cursor" aria-hidden="true"></span>';
     navLogo.innerHTML = html;
   }
 
-  // Steps: string char = type it, -1 = backspace, positive number = pause (ms)
+  // Steps: string = type char | -1 = backspace | number > 0 = pause ms | { phase: N } = set color mode
   const steps = [
     // ── Phase 1: nickname first ─────────────────────────────────
-    '<', 'a', 'z', 'y', 'a',            // <azya
-    550,                                 // hmm… that's not my real name
-    -1, -1, -1, -1,                      // backspace azya → back to <
+    '<', 'a', 'z', 'y', 'a',
+    550,                                 // pause — hmm, not my name
+    -1, -1, -1, -1,                         // backspace azya → back to <
 
     // ── Phase 2: real name + dot ─────────────────────────────────
-    'h', 'a', 'a', 's', 'y', 'a', '.',  // <haasya.  (dot included here)
+    'h', 'a', 'a', 's', 'y', 'a', '.',         // <haasya.
 
-    // ── Phase 3: try university domain ───────────────────────────
-    'u', 'o', 'f', 'a',                  // .uofa
-    600,                                 // tempting… but nah
-    -1, -1, -1, -1,                      // backspace uofa → back to .
+    // ── Extension 1: .uofa (UAlberta) ────────────────────────────
+    { phase: 0 },                        // dot turns gold, chars go green/gold
+    'u', 'o', 'f', 'a',
+    600,                                 // pause — tempting but nah
+    -1, -1, -1, -1,                         // backspace uofa → back to .
 
-    // ── Phase 4: try country TLD ─────────────────────────────────
-    'c', 'a',                            // .ca
-    450,                                 // close… still not right
-    -1, -1,                              // backspace ca → back to .
+    // ── Extension 2: .ca (Canada) ────────────────────────────────
+    { phase: 1 },                        // dot + chars turn Canadian red
+    'c', 'a',
+    450,                                 // pause — close, still no
+    -1, -1,                               // backspace ca → back to .
 
-    // ── Phase 5: try .ke ─────────────────────────────────────────
-    'k', 'e',                            // .ke
-    380,                                 // nope
-    -1, -1,                              // backspace ke → back to .
+    // ── Extension 3: .ke (Kenya) ─────────────────────────────────
+    { phase: 2 },                        // k = Kenya red, e = Kenya green
+    'k', 'e',
+    380,                                 // pause — nope
+    -1, -1,                               // backspace ke → back to .
 
-    // ── Phase 6: the right one ───────────────────────────────────
-    'd', 'e', 'v',                       // .dev  ← this is it
-    '/', '>',                            // />
+    // ── Extension 4: .dev — this is the one ──────────────────────
+    { phase: 3 },                        // full hacker green
+    'd', 'e', 'v',
+    '/', '>',
   ];
 
   let buf = '';
@@ -78,7 +106,6 @@
 
   function nextStep() {
     if (stepIdx >= steps.length) {
-      // Done — cursor stays, switches to slower resting blink
       render(buf, true);
       const cursorEl = navLogo.querySelector('.logo-cursor');
       if (cursorEl) cursorEl.classList.add('logo-cursor--resting');
@@ -87,7 +114,15 @@
 
     const step = steps[stepIdx++];
 
-    // Pause marker (positive numbers only) — wait silently
+    // Phase change marker — update color mode and re-render immediately
+    if (step && typeof step === 'object' && 'phase' in step) {
+      phase = step.phase;
+      render(buf, true);
+      setTimeout(nextStep, 0);
+      return;
+    }
+
+    // Pause (positive numbers only — -1 must fall through)
     if (typeof step === 'number' && step > 0) {
       setTimeout(nextStep, step);
       return;
@@ -101,15 +136,13 @@
 
     render(buf, true);
 
-    // Human-like timing
-    let delay = 90 + Math.random() * 70;              // 90–160 ms normal
-    if (step === -1) delay = 65 + Math.random() * 45; // backspace a touch faster
-    if (step === '<') delay = 200;                      // slight pause before first char
+    let delay = 90 + Math.random() * 70;
+    if (step === -1) delay = 65 + Math.random() * 45;
+    if (step === '<') delay = 200;
 
     setTimeout(nextStep, delay);
   }
 
-  // Show lone cursor, then start the sequence
   render('', true);
   setTimeout(nextStep, 700);
 })();
