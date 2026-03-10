@@ -64,8 +64,10 @@
 
   function nextStep() {
     if (stepIdx >= steps.length) {
-      // Typing done — cursor stays blinking forever (option B)
+      // Typing done — keep cursor blinking but switch to slower resting speed
       render(buf, true);
+      const cursorEl = navLogo.querySelector('.logo-cursor');
+      if (cursorEl) cursorEl.classList.add('logo-cursor--resting');
       return;
     }
 

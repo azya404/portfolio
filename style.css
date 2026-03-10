@@ -258,6 +258,11 @@ section {
   }
 }
 
+/* Slower blink once typing is complete — 25% slower than during typing */
+.logo-cursor--resting {
+  animation-duration: 0.75s;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
