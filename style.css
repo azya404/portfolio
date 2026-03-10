@@ -311,6 +311,11 @@ section {
   letter-spacing: -0.02em;
   transition: opacity 0.2s;
   white-space: nowrap;
+  /* Reserved width = longest typed state (<haasya.dev/>) = 13 chars + cursor.
+     ch units are exact in monospace — 1ch = 1 character width.
+     15ch gives headroom without wasting space. */
+  width: 15ch;
+  flex-shrink: 0;
 }
 
 .nav-logo:hover {
