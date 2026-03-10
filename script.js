@@ -19,9 +19,9 @@
 
   // Per-phase extension color configs
   const phaseColors = {
-    0: { // .uofa — UAlberta green & gold alternating per character
-      dot: '#FFDB05',
-      char: (i) => i % 2 === 0 ? '#007C41' : '#FFDB05',
+    0: { // .uofa — UAlberta: dot starts green, then alternates gold/green
+      dot: '#007C41',
+      char: (i) => i % 2 === 0 ? '#FFDB05' : '#007C41',
     },
     1: { // .ca — Canadian flag: . red, c white, a red (alternating)
       dot: '#D52B1E',
