@@ -233,6 +233,30 @@ section {
   color: var(--accent);
 }
 
+/* Typewriter cursor shown during logo animation */
+.logo-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 0.8em;
+  background: var(--accent-light);
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  border-radius: 1px;
+  animation: logoCursorBlink 0.6s step-end infinite;
+}
+
+@keyframes logoCursorBlink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
 .nav-links {
   display: flex;
   align-items: center;

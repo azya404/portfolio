@@ -3,6 +3,104 @@
    script.js — Nav interactions + Animations
    ============================================ */
 
+/* ================================================
+   LOGO TYPEWRITER ANIMATION
+   Sequence: <haasya.co [BS][BS] dev/>
+   Colors applied by buffer position regardless
+   of whether char is correct (typo goes purple too)
+   ================================================ */
+(function initLogoTyping() {
+  const navLogo = document.getElementById('navLogo');
+  if (!navLogo) return;
+
+  // Map buffer index → CSS class for that character zone
+  // Target: < h a a s y a . d e v / >
+  //         0 1 2 3 4 5 6 7 8 9 10 11 12
+  function getClass(pos) {
+    if (pos === 0) return 'logo-bracket'; // <
+    if (pos >= 1 && pos <= 6) return '';              // haasya
+    if (pos >= 7 && pos <= 10) return 'logo-accent';  // .dev
+    if (pos >= 11) return 'logo-bracket'; // />
+    return '';
+  }
+
+  // Build coloured HTML from current buffer + optional blinking cursor element
+  function render(buf, showCursor) {
+    let html = '';
+    let i = 0;
+    while (i < buf.length) {
+      const cls = getClass(i);
+      let chunk = '';
+      while (i < buf.length && getClass(i) === cls) {
+        // Escape < and > so they display as literals
+        const ch = buf[i] === '<' ? '&lt;' : buf[i] === '>' ? '&gt;' : buf[i];
+        chunk += ch;
+        i++;
+      }
+      html += cls ? `<span class="${cls}">${chunk}</span>` : chunk;
+    }
+    if (showCursor) html += '<span class="logo-cursor" aria-hidden="true"></span>';
+    navLogo.innerHTML = html;
+  }
+
+  // Typing sequence — strings are chars to add, -1 means backspace
+  // Story: confidently types <haasya.co … pauses … backspaces … finishes dev/>
+  const steps = [
+    '<',                   // open bracket
+    'h', 'a', 'a', 's', 'y', 'a', // name
+    '.',                   // dot
+    'c', 'o',               // TYPO: typed .co instead of .dev
+    -1, -1,                // realise mistake, delete 'o' then 'c'
+    'd', 'e', 'v',           // correct extension
+    '/', '>',               // close bracket
+  ];
+
+  // Index of the last "wrong" character before we start correcting
+  // (step index 9 = 'o', the second typo char)
+  const TYPO_LINGER_IDX = 9;
+
+  let buf = '';
+  let stepIdx = 0;
+
+  function nextStep() {
+    if (stepIdx >= steps.length) {
+      // Finished — let cursor blink naturally for ~2s then remove it
+      let ticks = 0;
+      const done = setInterval(() => {
+        render(buf, ticks % 2 === 0);
+        if (++ticks > 7) {
+          clearInterval(done);
+          render(buf, false); // final static state, no cursor
+        }
+      }, 380);
+      return;
+    }
+
+    const step = steps[stepIdx];
+    stepIdx++;
+
+    if (step === -1) {
+      buf = buf.slice(0, -1); // backspace
+    } else {
+      buf += step;
+    }
+
+    render(buf, true);
+
+    // Timing — mimic real human typing rhythm
+    let delay = 90 + Math.random() * 70;        // base 90–160 ms
+    if (step === -1) delay = 70 + Math.random() * 50; // backspace faster
+    if (stepIdx === TYPO_LINGER_IDX + 1) delay = 460; // pause after noticing typo
+    if (step === '<' && stepIdx === 1) delay = 180; // slight hesitation at start
+
+    setTimeout(nextStep, delay);
+  }
+
+  // Show cursor alone first, then start typing after a short settle delay
+  render('', true);
+  setTimeout(nextStep, 650);
+})();
+
 /* ---- Navbar scroll effect ---- */
 const navbar = document.getElementById('navbar');
 const navToggle = document.getElementById('navToggle');
