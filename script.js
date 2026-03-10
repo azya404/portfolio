@@ -23,12 +23,12 @@
       dot: '#FFDB05',
       char: (i) => i % 2 === 0 ? '#007C41' : '#FFDB05',
     },
-    1: { // .ca — Canadian flag red
+    1: { // .ca — Canadian flag: . red, c white, a red (alternating)
       dot: '#D52B1E',
-      char: () => '#D52B1E',
+      char: (i) => i % 2 === 0 ? '#FFFFFF' : '#D52B1E',
     },
-    2: { // .ke — Kenya: k = red, e = green
-      dot: '#aaaaaa',
+    2: { // .ke — Kenya flag order: . black, k red, e green
+      dot: '#111111',
       char: (i) => i === 0 ? '#BB0000' : '#006600',
     },
     3: { // .dev — hacker terminal neon green
