@@ -376,6 +376,13 @@ section {
   transition: color 0.2s, background 0.2s;
 }
 
+.nav-num {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-right: 2px;
+}
+
 .nav-link:hover,
 .nav-link.active {
   color: var(--text);
