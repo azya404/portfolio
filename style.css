@@ -296,11 +296,14 @@ section {
 
 .nav-inner {
   width: 100%;
-  padding: 0 48px;
   height: 100%;
-  display: flex;
+  display: grid;
+  /* 3 zones mirroring the hero section layout:
+     col-1 (left pad zone): shrinks/grows with viewport → logo right-aligned
+     col-2 (content zone):  max 1100px — nav links centered here
+     col-3 (right pad zone): shrinks/grows with viewport → toggle left-aligned */
+  grid-template-columns: 1fr minmax(0, var(--container)) 1fr;
   align-items: center;
-  justify-content: space-between;
 }
 
 .nav-logo {
@@ -311,11 +314,11 @@ section {
   letter-spacing: -0.02em;
   transition: opacity 0.2s;
   white-space: nowrap;
-  /* Reserved width = longest typed state (<haasya.dev/>) = 13 chars + cursor.
-     ch units are exact in monospace — 1ch = 1 character width.
-     15ch gives headroom without wasting space. */
   width: 15ch;
   flex-shrink: 0;
+  /* Right-align logo within its grid column so ’>’ sits at the content edge */
+  justify-self: end;
+  padding-right: 24px;
 }
 
 .nav-logo:hover {
@@ -362,7 +365,9 @@ section {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  /* centered within the content grid column */
+  gap: 4px;
   list-style: none;
 }
 
@@ -397,7 +402,7 @@ section {
   border: 1px solid var(--tag-border);
   color: var(--accent-light);
   transition: all 0.2s;
-  margin-left: 8px;
+  white-space: nowrap;
 }
 
 .nav-cta:hover {
@@ -423,6 +428,16 @@ section {
   background: var(--text);
   border-radius: 2px;
   transition: all 0.3s;
+}
+
+/* Right zone of 3-column nav grid — holds CTA + toggle (+ hamburger on mobile) */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  padding-left: 24px;
+  /* matches container inner padding — aligns to right content edge */
 }
 
 /* ================================================
