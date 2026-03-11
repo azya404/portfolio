@@ -187,18 +187,18 @@ section {
    Applied when <html data-theme="light">
    ================================================ */
 [data-theme="light"] {
-  --bg: #f0f7ff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #e4f0fc;
-  --border: rgba(0, 0, 0, 0.07);
-  --border-hover: rgba(0, 0, 0, 0.15);
+  --bg: #e9ecf1;
+  --bg-card: #f3f5f9;
+  --bg-card-hover: #f8fafd;
+  --border: rgba(13, 27, 46, 0.08);
+  --border-hover: rgba(13, 27, 46, 0.16);
 
   --accent: #0a8c6a;
   --accent-light: #0fb888;
   --accent-glow: rgba(10, 140, 106, 0.15);
   --accent-dim: rgba(10, 140, 106, 0.07);
 
-  --text: #06111f;
+  --text: #0d1b2e;
   --text-muted: #3a5470;
   --text-dim: #8aaac4;
 
