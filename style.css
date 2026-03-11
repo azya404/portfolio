@@ -5,23 +5,24 @@
 
 /* ---- Custom Properties ---- */
 :root {
-  --bg: #0a0a0f;
-  --bg-card: #111118;
-  --bg-card-hover: #16161f;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.15);
+  /* ---- Dark mode (default) — deep ocean navy + teal ---- */
+  --bg: #050d1a;
+  --bg-card: #0d1b2e;
+  --bg-card-hover: #112338;
+  --border: rgba(74, 240, 196, 0.08);
+  --border-hover: rgba(74, 240, 196, 0.2);
 
-  --accent: #7c6ef7;
-  --accent-light: #a89cf9;
-  --accent-glow: rgba(124, 110, 247, 0.25);
-  --accent-dim: rgba(124, 110, 247, 0.12);
+  --accent: #4af0c4;
+  --accent-light: #7ff5d7;
+  --accent-glow: rgba(74, 240, 196, 0.2);
+  --accent-dim: rgba(74, 240, 196, 0.08);
 
-  --text: #f0f0f8;
-  --text-muted: #8888a8;
-  --text-dim: #555570;
+  --text: #ddeeff;
+  --text-muted: #6b8cad;
+  --text-dim: #334d66;
 
-  --tag-bg: rgba(124, 110, 247, 0.1);
-  --tag-border: rgba(124, 110, 247, 0.25);
+  --tag-bg: rgba(74, 240, 196, 0.07);
+  --tag-border: rgba(74, 240, 196, 0.2);
 
   --radius: 12px;
   --radius-sm: 8px;
@@ -186,23 +187,23 @@ section {
    Applied when <html data-theme="light">
    ================================================ */
 [data-theme="light"] {
-  --bg: #f5f5fa;
+  --bg: #f0f7ff;
   --bg-card: #ffffff;
-  --bg-card-hover: #eeeef8;
-  --border: rgba(0, 0, 0, 0.08);
-  --border-hover: rgba(0, 0, 0, 0.18);
+  --bg-card-hover: #e4f0fc;
+  --border: rgba(0, 0, 0, 0.07);
+  --border-hover: rgba(0, 0, 0, 0.15);
 
-  --accent: #6558e8;
-  --accent-light: #7c6ef7;
-  --accent-glow: rgba(101, 88, 232, 0.18);
-  --accent-dim: rgba(101, 88, 232, 0.08);
+  --accent: #0a8c6a;
+  --accent-light: #0fb888;
+  --accent-glow: rgba(10, 140, 106, 0.15);
+  --accent-dim: rgba(10, 140, 106, 0.07);
 
-  --text: #0a0a14;
-  --text-muted: #44445a;
-  --text-dim: #9999b8;
+  --text: #06111f;
+  --text-muted: #3a5470;
+  --text-dim: #8aaac4;
 
-  --tag-bg: rgba(101, 88, 232, 0.08);
-  --tag-border: rgba(101, 88, 232, 0.2);
+  --tag-bg: rgba(10, 140, 106, 0.07);
+  --tag-border: rgba(10, 140, 106, 0.18);
 }
 
 [data-theme="light"] #navbar.scrolled {
