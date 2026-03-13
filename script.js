@@ -147,6 +147,15 @@
   setTimeout(nextStep, 700);
 })();
 
+/* ---- Scroll progress bar ---- */
+const scrollProgress = document.getElementById('scroll-progress');
+function updateScrollProgress() {
+  const scrolled = window.scrollY;
+  const total    = document.documentElement.scrollHeight - window.innerHeight;
+  scrollProgress.style.width = total > 0 ? (scrolled / total * 100) + '%' : '0%';
+}
+window.addEventListener('scroll', updateScrollProgress, { passive: true });
+
 /* ---- Navbar scroll effect ---- */
 const navbar = document.getElementById('navbar');
 const navToggle = document.getElementById('navToggle');

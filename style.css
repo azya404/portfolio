@@ -71,6 +71,19 @@ a {
   text-decoration: none;
 }
 
+/* ---- Scroll progress bar ---- */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: rgba(240, 240, 230, 0.75);
+  z-index: 200;
+  pointer-events: none;
+  transition: width 0.05s linear;
+}
+
 /* ---- Scrollbar ---- */
 ::-webkit-scrollbar {
   width: 6px;
