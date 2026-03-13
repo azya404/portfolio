@@ -84,23 +84,9 @@ a {
   transition: none;
 }
 
-/* ---- Scrollbar ---- */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--accent-dim);
-  border-radius: 99px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
-}
+/* ---- Hide scrollbar (horizontal progress bar replaces it) ---- */
+::-webkit-scrollbar { display: none; }
+html { scrollbar-width: none; }
 
 /* ---- Container ---- */
 .container {
