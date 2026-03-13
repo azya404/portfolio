@@ -395,11 +395,11 @@ void main(){
     dye.swap();
   }
 
-  // Burst of splats — used on load and on the periodic timer
+  // ── Idle burst (FSM-controlled — does NOT self-schedule) ──
   function burstSplats() {
     const w = canvas.width, h = canvas.height;
     const f = CFG.SPLAT_FORCE * 0.8;
-    const count = 4 + Math.floor(Math.random() * 3); // 4–6 splats per burst
+    const count = 4 + Math.floor(Math.random() * 3);
     for (let i = 0; i < count; i++) {
       const x     = w * (0.1 + Math.random() * 0.8);
       const y     = h * (0.1 + Math.random() * 0.8);
@@ -407,9 +407,54 @@ void main(){
       const mag   = f * (0.5 + Math.random() * 0.7);
       splat(x, y, Math.cos(angle) * mag, Math.sin(angle) * mag, nextColour());
     }
-    // Schedule next burst in 5–10 s
-    setTimeout(burstSplats, 5000 + Math.random() * 5000);
   }
+
+  // ── FSM: HIDDEN → IDLE ↔ ACTIVE ──────────────────────────
+  // HIDDEN  : hero not in viewport — nothing fires
+  // IDLE    : hero visible, no recent mouse activity — periodic bursts
+  // ACTIVE  : user is moving mouse on hero — reactive splats, no idle bursts
+  const S = { HIDDEN: 0, IDLE: 1, ACTIVE: 2 };
+  let fsmState = S.HIDDEN;
+  let idleTimer      = null;
+  let inactiveTimer  = null;
+  const INACTIVITY_MS = 2000; // ms of no movement before returning to IDLE
+
+  function scheduleIdleBurst() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      if (fsmState === S.IDLE) {
+        burstSplats();
+        scheduleIdleBurst();   // chain only while IDLE
+      }
+    }, 5000 + Math.random() * 5000);
+  }
+
+  function enterIdle() {
+    fsmState = S.IDLE;
+    scheduleIdleBurst();
+  }
+
+  function enterActive() {
+    fsmState = S.ACTIVE;
+    clearTimeout(idleTimer);      // stop idle bursts immediately
+    clearTimeout(inactiveTimer);
+  }
+
+  function enterHidden() {
+    fsmState = S.HIDDEN;
+    clearTimeout(idleTimer);
+    clearTimeout(inactiveTimer);
+  }
+
+  // IntersectionObserver — drives HIDDEN ↔ IDLE transitions
+  const heroObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      if (fsmState === S.HIDDEN) enterIdle();
+    } else {
+      enterHidden();
+    }
+  }, { threshold: 0.01 });
+  heroObserver.observe(hero);
 
   // ── Simulation step ───────────────────────────────────────
   function step(dt) {
@@ -506,21 +551,20 @@ void main(){
     requestAnimationFrame(loop);
   }
 
+  // Fire an initial burst right away (hero starts in viewport on load)
   burstSplats();
   requestAnimationFrame(loop);
 
   // ── Mouse / touch input ───────────────────────────────────
   let px = 0, py = 0, moved = false;
-  let vx = 0, vy = 0;        // lerped velocity — prevents snap/burst on direction changes
-  let strokeColour = null;    // hold one colour per continuous stroke
+  let vx = 0, vy = 0;
+  let strokeColour = nextColour();
 
   function onMove(cx, cy) {
     const rect = canvas.getBoundingClientRect();
     const nx = cx - rect.left;
     const ny = cy - rect.top;
 
-    // Normalise delta to canvas size so behaviour is resolution-independent,
-    // then lerp toward the target velocity (0.4 factor ≈ smooth but responsive)
     const targetDx = (nx - px) / canvas.width  * CFG.SPLAT_FORCE;
     const targetDy = (ny - py) / canvas.height * CFG.SPLAT_FORCE;
     vx += (targetDx - vx) * 0.4;
@@ -531,14 +575,31 @@ void main(){
 
     if (moved) splat(px, py, vx, vy, strokeColour);
     moved = true;
+
+    // Transition to ACTIVE and reset inactivity countdown
+    if (fsmState !== S.ACTIVE) enterActive();
+    clearTimeout(inactiveTimer);
+    inactiveTimer = setTimeout(() => {
+      // No movement for INACTIVITY_MS → return to idle if hero still visible
+      moved = false; vx = 0; vy = 0;
+      if (fsmState === S.ACTIVE) enterIdle();
+    }, INACTIVITY_MS);
   }
 
-  hero.addEventListener('mousemove',  (e) => onMove(e.clientX, e.clientY),                        { passive: true });
-  hero.addEventListener('touchmove',  (e) => onMove(e.touches[0].clientX, e.touches[0].clientY),  { passive: true });
-  hero.addEventListener('mouseleave', () => { moved = false; vx = 0; vy = 0; strokeColour = nextColour(); });
-  hero.addEventListener('touchend',   () => { moved = false; vx = 0; vy = 0; strokeColour = nextColour(); });
-  hero.addEventListener('mouseenter', () => { strokeColour = nextColour(); });
+  hero.addEventListener('mousemove',  (e) => onMove(e.clientX, e.clientY),                       { passive: true });
+  hero.addEventListener('touchmove',  (e) => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
 
-  strokeColour = nextColour();
+  hero.addEventListener('mouseenter', () => { strokeColour = nextColour(); });
+  hero.addEventListener('mouseleave', () => {
+    moved = false; vx = 0; vy = 0;
+    clearTimeout(inactiveTimer);
+    strokeColour = nextColour();
+    if (fsmState === S.ACTIVE) enterIdle();
+  });
+  hero.addEventListener('touchend', () => {
+    moved = false; vx = 0; vy = 0;
+    clearTimeout(inactiveTimer);
+    if (fsmState === S.ACTIVE) enterIdle();
+  });
 
 })();

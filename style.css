@@ -110,9 +110,9 @@ html { scrollbar-width: none; }
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: rgba(74, 240, 196, 0.08);
-    border: 1.5px solid rgba(74, 240, 196, 0.35);
-    box-shadow: 0 0 18px rgba(74, 240, 196, 0.2), inset 0 0 10px rgba(74, 240, 196, 0.05);
+    background: rgba(74, 240, 196, 0.18);
+    border: 1.5px solid rgba(74, 240, 196, 0.6);
+    box-shadow: 0 0 18px rgba(74, 240, 196, 0.35), inset 0 0 10px rgba(74, 240, 196, 0.12);
     pointer-events: none;
     z-index: 9998;
     transform: translate(-50%, -50%);
@@ -124,8 +124,8 @@ html { scrollbar-width: none; }
   #cursor-ring.hovering {
     width: 56px;
     height: 56px;
-    background: rgba(74, 240, 196, 0.14);
-    box-shadow: 0 0 28px rgba(74, 240, 196, 0.35), inset 0 0 14px rgba(74, 240, 196, 0.1);
+    background: rgba(74, 240, 196, 0.25);
+    box-shadow: 0 0 28px rgba(74, 240, 196, 0.5), inset 0 0 14px rgba(74, 240, 196, 0.18);
   }
 }
 
@@ -559,6 +559,8 @@ section {
   height: 100%;
   pointer-events: none;
   z-index: 1;
+  mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 50%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 50%, transparent 100%);
 }
 
 .hero-content {

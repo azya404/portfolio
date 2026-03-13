@@ -355,33 +355,19 @@ document.querySelectorAll('.project-card').forEach(card => {
   const ring = document.getElementById('cursor-ring');
   if (!dot || !ring) return;
 
-  let mouseX = 0, mouseY = 0;
-  let ringX = 0, ringY = 0;
   let visible = false;
 
   document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    dot.style.left = mouseX + 'px';
-    dot.style.top = mouseY + 'px';
+    dot.style.left  = e.clientX + 'px';
+    dot.style.top   = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px';
+    ring.style.top  = e.clientY + 'px';
     if (!visible) {
       visible = true;
-      dot.style.opacity = '1';
+      dot.style.opacity  = '1';
       ring.style.opacity = '1';
-      // Snap ring to cursor on first appearance to avoid swooping in from 0,0
-      ringX = mouseX;
-      ringY = mouseY;
     }
-  });
-
-  // Ring lerp loop
-  (function tickRing() {
-    ringX += (mouseX - ringX) * 0.1;
-    ringY += (mouseY - ringY) * 0.1;
-    ring.style.left = ringX.toFixed(2) + 'px';
-    ring.style.top = ringY.toFixed(2) + 'px';
-    requestAnimationFrame(tickRing);
-  })();
+  }, { passive: true });
 
   // Expand ring on interactive elements
   const interactives = 'a, button, [role="button"], .project-card, .nav-link, .nav-cta';
