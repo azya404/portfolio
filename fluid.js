@@ -20,21 +20,29 @@
   const CFG = {
     SIM_RESOLUTION:       128,
     DYE_RESOLUTION:       mobile ? 512 : 1024,
-    DENSITY_DISSIPATION:  0.97,
-    VELOCITY_DISSIPATION: 0.98,
+    DENSITY_DISSIPATION:  0.98,
+    VELOCITY_DISSIPATION: 0.94,
     PRESSURE:             0.8,
     PRESSURE_ITERATIONS:  20,
-    CURL:                 3,
-    SPLAT_RADIUS:         0.22,
-    SPLAT_FORCE:          6000,
+    CURL:                 1,
+    SPLAT_RADIUS:         0.30,
+    SPLAT_FORCE:          3000,
   };
 
-  // Site palette — RGB 0-1, tuned for dark navy background
+  // Extended palette — dark-mode complementary colours, RGB 0-1
   const PALETTE = [
-    { r: 0.29,  g: 0.94,  b: 0.77  },  // teal    #4af0c4
-    { r: 0.22,  g: 0.48,  b: 1.00  },  // blue    #387aff
-    { r: 0.55,  g: 0.36,  b: 0.96  },  // indigo  #8c5cf5
-    { r: 0.00,  g: 0.75,  b: 1.00  },  // cyan    #00bfff
+    { r: 0.29,  g: 0.94,  b: 0.77  },  // teal         #4af0c4  (site accent)
+    { r: 0.22,  g: 0.48,  b: 1.00  },  // blue         #387aff
+    { r: 0.55,  g: 0.36,  b: 0.96  },  // indigo       #8c5cf5
+    { r: 0.00,  g: 0.75,  b: 1.00  },  // cyan         #00bfff
+    { r: 0.96,  g: 0.25,  b: 0.40  },  // rose-red     #f54066
+    { r: 1.00,  g: 0.55,  b: 0.10  },  // amber        #ff8c1a
+    { r: 1.00,  g: 0.85,  b: 0.20  },  // yellow       #ffd933
+    { r: 0.90,  g: 0.30,  b: 0.80  },  // hot pink     #e64dcc
+    { r: 0.70,  g: 0.20,  b: 0.95  },  // violet       #b233f2
+    { r: 0.20,  g: 0.90,  b: 0.40  },  // lime green   #33e666
+    { r: 0.95,  g: 0.95,  b: 0.90  },  // off-white    #f2f2e6
+    { r: 0.00,  g: 0.85,  b: 0.65  },  // emerald      #00d9a6
   ];
   let palIdx = 0;
   function nextColour() {
@@ -383,13 +391,15 @@ void main(){
     dye.swap();
   }
 
-  // Seed a few initial splats so the canvas isn't blank on load
+  // Seed initial splats so the canvas isn't blank on load
   function seedSplats() {
-    const w = canvas.width, h = canvas.height, f = CFG.SPLAT_FORCE;
+    const w = canvas.width, h = canvas.height, f = CFG.SPLAT_FORCE * 0.8;
     [
-      { x: w*0.25, y: h*0.40, dx:  0.3*f, dy:  0.2*f, c: PALETTE[0] },
-      { x: w*0.72, y: h*0.45, dx: -0.2*f, dy:  0.3*f, c: PALETTE[1] },
-      { x: w*0.50, y: h*0.65, dx:  0.1*f, dy: -0.3*f, c: PALETTE[2] },
+      { x: w*0.20, y: h*0.35, dx:  0.4*f, dy:  0.2*f, c: PALETTE[0]  },  // teal
+      { x: w*0.75, y: h*0.40, dx: -0.3*f, dy:  0.3*f, c: PALETTE[2]  },  // indigo
+      { x: w*0.50, y: h*0.65, dx:  0.2*f, dy: -0.4*f, c: PALETTE[4]  },  // rose
+      { x: w*0.35, y: h*0.55, dx: -0.2*f, dy: -0.2*f, c: PALETTE[1]  },  // blue
+      { x: w*0.65, y: h*0.25, dx:  0.1*f, dy:  0.3*f, c: PALETTE[8]  },  // violet
     ].forEach(s => splat(s.x, s.y, s.dx, s.dy, s.c));
   }
 
@@ -498,8 +508,10 @@ void main(){
     const rect = canvas.getBoundingClientRect();
     const nx   = cx - rect.left;
     const ny   = cy - rect.top;
-    const dx   = (nx - px) * CFG.SPLAT_FORCE;
-    const dy   = (ny - py) * CFG.SPLAT_FORCE;
+    // Clamp delta so fast sweeps don't explode the simulation
+    const clamp = (v, max) => Math.min(Math.abs(v), max) * Math.sign(v);
+    const dx   = clamp(nx - px, 25) * CFG.SPLAT_FORCE;
+    const dy   = clamp(ny - py, 25) * CFG.SPLAT_FORCE;
     px = nx; py = ny;
     if (moved) splat(px, py, dx, dy, nextColour());
     moved = true;
