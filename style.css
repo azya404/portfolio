@@ -475,6 +475,37 @@ section {
   filter: blur(40px);
 }
 
+/* ---- Hero gradient orbs (mouse-reactive swirl) ---- */
+.hero-orb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.hero-orb-1 {
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(74, 240, 196, 0.15) 0%, transparent 70%);
+  filter: blur(90px);
+}
+
+.hero-orb-2 {
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(56, 122, 255, 0.12) 0%, transparent 70%);
+  filter: blur(110px);
+}
+
+.hero-orb-3 {
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.10) 0%, transparent 70%);
+  filter: blur(100px);
+}
+
 .hero-content {
   position: relative;
   max-width: var(--container);
