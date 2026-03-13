@@ -316,59 +316,6 @@ if (heroGlow) {
   }, { passive: true });
 }
 
-/* ---- Hero gradient orbs — mouse-follow swirl ---- */
-(function initHeroOrbs() {
-  const hero = document.getElementById('hero');
-  if (!hero) return;
-
-  const orbEls = [
-    document.querySelector('.hero-orb-1'),
-    document.querySelector('.hero-orb-2'),
-    document.querySelector('.hero-orb-3'),
-  ];
-  if (!orbEls[0]) return;
-
-  const heroW = hero.offsetWidth;
-  const heroH = hero.offsetHeight;
-
-  // Initial resting positions — scattered naturally across the hero
-  const orbs = [
-    { el: orbEls[0], x: heroW * 0.35, y: heroH * 0.25, speed: 0.06  },
-    { el: orbEls[1], x: heroW * 0.65, y: heroH * 0.45, speed: 0.035 },
-    { el: orbEls[2], x: heroW * 0.20, y: heroH * 0.65, speed: 0.02  },
-  ];
-
-  // Target starts at hero center so orbs don't jump on first mousemove
-  let targetX = heroW * 0.5;
-  let targetY = heroH * 0.4;
-
-  hero.addEventListener('mousemove', (e) => {
-    const rect = hero.getBoundingClientRect();
-    targetX = e.clientX - rect.left;
-    targetY = e.clientY - rect.top;
-  }, { passive: true });
-
-  function lerp(a, b, t) { return a + (b - a) * t; }
-
-  // Apply initial transforms so orbs render at resting positions before mouse enters
-  orbs.forEach(orb => {
-    const tx = orb.x - orb.el.offsetWidth  / 2;
-    const ty = orb.y - orb.el.offsetHeight / 2;
-    orb.el.style.transform = `translate(${tx}px, ${ty}px)`;
-  });
-
-  (function tick() {
-    orbs.forEach(orb => {
-      orb.x = lerp(orb.x, targetX, orb.speed);
-      orb.y = lerp(orb.y, targetY, orb.speed);
-      const tx = orb.x - orb.el.offsetWidth  / 2;
-      const ty = orb.y - orb.el.offsetHeight / 2;
-      orb.el.style.transform = `translate(${tx}px, ${ty}px)`;
-    });
-    requestAnimationFrame(tick);
-  })();
-})();
-
 /* ---- Project card cursor tilt ---- */
 document.querySelectorAll('.project-card').forEach(card => {
   card.addEventListener('mousemove', (e) => {

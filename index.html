@@ -69,10 +69,12 @@
   <section id="hero">
     <div class="hero-bg-grid"></div>
     <div class="hero-glow"></div>
-    <!-- Gradient orbs — mouse-reactive swirl -->
+    <!-- Ambient colour orbs — static background glow -->
     <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
     <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
     <div class="hero-orb hero-orb-3" aria-hidden="true"></div>
+    <!-- WebGL fluid simulation canvas -->
+    <canvas id="fluid-canvas" aria-hidden="true"></canvas>
     <div class="hero-content">
       <div class="hero-tag">
         <span class="tag-dot"></span>
@@ -435,6 +437,7 @@
   </footer>
 
   <script src="script.js"></script>
+  <script src="fluid.js" defer></script>
 </body>
 
 </html>
