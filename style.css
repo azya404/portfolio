@@ -5,23 +5,24 @@
 
 /* ---- Custom Properties ---- */
 :root {
-  --bg: #0a0a0f;
-  --bg-card: #111118;
-  --bg-card-hover: #16161f;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-hover: rgba(255, 255, 255, 0.15);
+  /* ---- Dark mode (default) — deep ocean navy + teal ---- */
+  --bg: #050d1a;
+  --bg-card: #0d1b2e;
+  --bg-card-hover: #112338;
+  --border: rgba(74, 240, 196, 0.08);
+  --border-hover: rgba(74, 240, 196, 0.2);
 
-  --accent: #7c6ef7;
-  --accent-light: #a89cf9;
-  --accent-glow: rgba(124, 110, 247, 0.25);
-  --accent-dim: rgba(124, 110, 247, 0.12);
+  --accent: #4af0c4;
+  --accent-light: #7ff5d7;
+  --accent-glow: rgba(74, 240, 196, 0.2);
+  --accent-dim: rgba(74, 240, 196, 0.08);
 
-  --text: #f0f0f8;
-  --text-muted: #8888a8;
-  --text-dim: #555570;
+  --text: #ddeeff;
+  --text-muted: #6b8cad;
+  --text-dim: #334d66;
 
-  --tag-bg: rgba(124, 110, 247, 0.1);
-  --tag-border: rgba(124, 110, 247, 0.25);
+  --tag-bg: rgba(74, 240, 196, 0.07);
+  --tag-border: rgba(74, 240, 196, 0.2);
 
   --radius: 12px;
   --radius-sm: 8px;
@@ -186,31 +187,31 @@ section {
    Applied when <html data-theme="light">
    ================================================ */
 [data-theme="light"] {
-  --bg: #f5f5fa;
-  --bg-card: #ffffff;
-  --bg-card-hover: #eeeef8;
-  --border: rgba(0, 0, 0, 0.08);
-  --border-hover: rgba(0, 0, 0, 0.18);
+  --bg: #e9ecf1;
+  --bg-card: #f3f5f9;
+  --bg-card-hover: #f8fafd;
+  --border: rgba(13, 27, 46, 0.08);
+  --border-hover: rgba(13, 27, 46, 0.16);
 
-  --accent: #6558e8;
-  --accent-light: #7c6ef7;
-  --accent-glow: rgba(101, 88, 232, 0.18);
-  --accent-dim: rgba(101, 88, 232, 0.08);
+  --accent: #0a8c6a;
+  --accent-light: #0fb888;
+  --accent-glow: rgba(10, 140, 106, 0.15);
+  --accent-dim: rgba(10, 140, 106, 0.07);
 
-  --text: #0a0a14;
-  --text-muted: #44445a;
-  --text-dim: #9999b8;
+  --text: #0d1b2e;
+  --text-muted: #3a5470;
+  --text-dim: #8aaac4;
 
-  --tag-bg: rgba(101, 88, 232, 0.08);
-  --tag-border: rgba(101, 88, 232, 0.2);
+  --tag-bg: rgba(10, 140, 106, 0.07);
+  --tag-border: rgba(10, 140, 106, 0.18);
 }
 
 [data-theme="light"] #navbar.scrolled {
-  background: rgba(245, 245, 250, 0.88);
+  background: rgba(233, 236, 241, 0.9);
 }
 
 [data-theme="light"] .nav-links {
-  background: rgba(245, 245, 250, 0.97);
+  background: rgba(233, 236, 241, 0.97);
 }
 
 [data-theme="light"] ::-webkit-scrollbar-track {
@@ -287,20 +288,22 @@ section {
 }
 
 #navbar.scrolled {
-  background: rgba(10, 10, 15, 0.85);
+  background: rgba(5, 13, 26, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
 }
 
 .nav-inner {
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 24px;
+  width: 100%;
   height: 100%;
-  display: flex;
+  display: grid;
+  /* 3 zones mirroring the hero section layout:
+     col-1 (left pad zone): shrinks/grows with viewport → logo right-aligned
+     col-2 (content zone):  max 1100px — nav links centered here
+     col-3 (right pad zone): shrinks/grows with viewport → toggle left-aligned */
+  grid-template-columns: 1fr minmax(0, var(--container)) 1fr;
   align-items: center;
-  justify-content: space-between;
 }
 
 .nav-logo {
@@ -311,11 +314,11 @@ section {
   letter-spacing: -0.02em;
   transition: opacity 0.2s;
   white-space: nowrap;
-  /* Reserved width = longest typed state (<haasya.dev/>) = 13 chars + cursor.
-     ch units are exact in monospace — 1ch = 1 character width.
-     15ch gives headroom without wasting space. */
   width: 15ch;
   flex-shrink: 0;
+  /* Right-align logo within its grid column so ’>’ sits at the content edge */
+  justify-self: end;
+  padding-right: 24px;
 }
 
 .nav-logo:hover {
@@ -362,7 +365,9 @@ section {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  /* centered within the content grid column */
+  gap: 4px;
   list-style: none;
 }
 
@@ -373,6 +378,13 @@ section {
   font-weight: 500;
   color: var(--text-muted);
   transition: color 0.2s, background 0.2s;
+}
+
+.nav-num {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-right: 2px;
 }
 
 .nav-link:hover,
@@ -390,7 +402,7 @@ section {
   border: 1px solid var(--tag-border);
   color: var(--accent-light);
   transition: all 0.2s;
-  margin-left: 8px;
+  white-space: nowrap;
 }
 
 .nav-cta:hover {
@@ -416,6 +428,16 @@ section {
   background: var(--text);
   border-radius: 2px;
   transition: all 0.3s;
+}
+
+/* Right zone of 3-column nav grid — holds CTA + toggle (+ hamburger on mobile) */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  padding-left: 24px;
+  /* matches container inner padding — aligns to right content edge */
 }
 
 /* ================================================

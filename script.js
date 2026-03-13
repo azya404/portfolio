@@ -31,9 +31,9 @@
       dot: '#111111',
       char: (i) => i === 0 ? '#BB0000' : '#006600',
     },
-    3: { // .dev — hacker terminal neon green
-      dot: '#39FF14',
-      char: () => '#39FF14',
+    3: { // .dev — matches the site teal accent (#4af0c4)
+      dot: '#4af0c4',
+      char: () => '#4af0c4',
     },
   };
 
