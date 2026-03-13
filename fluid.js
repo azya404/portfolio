@@ -21,12 +21,12 @@
     SIM_RESOLUTION:       128,
     DYE_RESOLUTION:       mobile ? 512 : 1024,
     DENSITY_DISSIPATION:  0.98,
-    VELOCITY_DISSIPATION: 0.94,
+    VELOCITY_DISSIPATION: 0.90,
     PRESSURE:             0.8,
     PRESSURE_ITERATIONS:  20,
-    CURL:                 1,
-    SPLAT_RADIUS:         0.30,
-    SPLAT_FORCE:          3000,
+    CURL:                 25,
+    SPLAT_RADIUS:         0.18,
+    SPLAT_FORCE:          6000,
   };
 
   // Extended palette — dark-mode complementary colours, RGB 0-1
@@ -511,23 +511,34 @@ void main(){
 
   // ── Mouse / touch input ───────────────────────────────────
   let px = 0, py = 0, moved = false;
+  let vx = 0, vy = 0;        // lerped velocity — prevents snap/burst on direction changes
+  let strokeColour = null;    // hold one colour per continuous stroke
 
   function onMove(cx, cy) {
     const rect = canvas.getBoundingClientRect();
-    const nx   = cx - rect.left;
-    const ny   = cy - rect.top;
-    // Clamp delta so fast sweeps don't explode the simulation
-    const clamp = (v, max) => Math.min(Math.abs(v), max) * Math.sign(v);
-    const dx   = clamp(nx - px, 25) * CFG.SPLAT_FORCE;
-    const dy   = clamp(ny - py, 25) * CFG.SPLAT_FORCE;
-    px = nx; py = ny;
-    if (moved) splat(px, py, dx, dy, nextColour());
+    const nx = cx - rect.left;
+    const ny = cy - rect.top;
+
+    // Normalise delta to canvas size so behaviour is resolution-independent,
+    // then lerp toward the target velocity (0.4 factor ≈ smooth but responsive)
+    const targetDx = (nx - px) / canvas.width  * CFG.SPLAT_FORCE;
+    const targetDy = (ny - py) / canvas.height * CFG.SPLAT_FORCE;
+    vx += (targetDx - vx) * 0.4;
+    vy += (targetDy - vy) * 0.4;
+
+    px = nx;
+    py = ny;
+
+    if (moved) splat(px, py, vx, vy, strokeColour);
     moved = true;
   }
 
-  hero.addEventListener('mousemove',  (e) => onMove(e.clientX, e.clientY),           { passive: true });
-  hero.addEventListener('touchmove',  (e) => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
-  hero.addEventListener('mouseleave', ()  => { moved = false; });
-  hero.addEventListener('touchend',   ()  => { moved = false; });
+  hero.addEventListener('mousemove',  (e) => onMove(e.clientX, e.clientY),                        { passive: true });
+  hero.addEventListener('touchmove',  (e) => onMove(e.touches[0].clientX, e.touches[0].clientY),  { passive: true });
+  hero.addEventListener('mouseleave', () => { moved = false; vx = 0; vy = 0; strokeColour = nextColour(); });
+  hero.addEventListener('touchend',   () => { moved = false; vx = 0; vy = 0; strokeColour = nextColour(); });
+  hero.addEventListener('mouseenter', () => { strokeColour = nextColour(); });
+
+  strokeColour = nextColour();
 
 })();
