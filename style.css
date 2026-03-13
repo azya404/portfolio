@@ -81,7 +81,7 @@ a {
   background: rgba(240, 240, 230, 0.75);
   z-index: 200;
   pointer-events: none;
-  transition: width 0.05s linear;
+  transition: none;
 }
 
 /* ---- Scrollbar ---- */

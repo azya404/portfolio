@@ -147,14 +147,21 @@
   setTimeout(nextStep, 700);
 })();
 
-/* ---- Scroll progress bar ---- */
+/* ---- Scroll progress bar (lerp-smoothed) ---- */
 const scrollProgress = document.getElementById('scroll-progress');
-function updateScrollProgress() {
-  const scrolled = window.scrollY;
-  const total    = document.documentElement.scrollHeight - window.innerHeight;
-  scrollProgress.style.width = total > 0 ? (scrolled / total * 100) + '%' : '0%';
-}
-window.addEventListener('scroll', updateScrollProgress, { passive: true });
+let scrollTarget = 0;
+let scrollCurrent = 0;
+
+window.addEventListener('scroll', () => {
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  scrollTarget = total > 0 ? (window.scrollY / total) * 100 : 0;
+}, { passive: true });
+
+(function tickProgress() {
+  scrollCurrent += (scrollTarget - scrollCurrent) * 0.1;
+  scrollProgress.style.width = scrollCurrent.toFixed(3) + '%';
+  requestAnimationFrame(tickProgress);
+})();
 
 /* ---- Navbar scroll effect ---- */
 const navbar = document.getElementById('navbar');
