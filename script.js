@@ -346,3 +346,58 @@ document.querySelectorAll('.project-card').forEach(card => {
     card.style.transition = 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
   });
 });
+
+/* ---- Custom cursor ---- */
+(function initCursor() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+  let visible = false;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    dot.style.left = mouseX + 'px';
+    dot.style.top = mouseY + 'px';
+    if (!visible) {
+      visible = true;
+      dot.style.opacity = '1';
+      ring.style.opacity = '1';
+      // Snap ring to cursor on first appearance to avoid swooping in from 0,0
+      ringX = mouseX;
+      ringY = mouseY;
+    }
+  });
+
+  // Ring lerp loop
+  (function tickRing() {
+    ringX += (mouseX - ringX) * 0.1;
+    ringY += (mouseY - ringY) * 0.1;
+    ring.style.left = ringX.toFixed(2) + 'px';
+    ring.style.top = ringY.toFixed(2) + 'px';
+    requestAnimationFrame(tickRing);
+  })();
+
+  // Expand ring on interactive elements
+  const interactives = 'a, button, [role="button"], .project-card, .nav-link, .nav-cta';
+  document.querySelectorAll(interactives).forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+
+  // Hide when cursor leaves the window
+  document.addEventListener('mouseleave', () => {
+    dot.style.opacity = '0';
+    ring.style.opacity = '0';
+    visible = false;
+  });
+
+  // Start hidden — revealed on first mousemove
+  dot.style.opacity = '0';
+  ring.style.opacity = '0';
+})();

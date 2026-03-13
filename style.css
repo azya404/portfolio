@@ -88,6 +88,47 @@ a {
 ::-webkit-scrollbar { display: none; }
 html { scrollbar-width: none; }
 
+/* ---- Custom cursor (pointer devices only) ---- */
+@media (pointer: fine) {
+  * { cursor: none !important; }
+
+  #cursor-dot {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s;
+    will-change: left, top;
+  }
+
+  #cursor-ring {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(74, 240, 196, 0.08);
+    border: 1.5px solid rgba(74, 240, 196, 0.35);
+    box-shadow: 0 0 18px rgba(74, 240, 196, 0.2), inset 0 0 10px rgba(74, 240, 196, 0.05);
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.25s var(--ease-out), height 0.25s var(--ease-out),
+                background 0.25s, box-shadow 0.25s, opacity 0.2s;
+    will-change: left, top;
+  }
+
+  #cursor-ring.hovering {
+    width: 56px;
+    height: 56px;
+    background: rgba(74, 240, 196, 0.14);
+    box-shadow: 0 0 28px rgba(74, 240, 196, 0.35), inset 0 0 14px rgba(74, 240, 196, 0.1);
+  }
+}
+
 /* ---- Container ---- */
 .container {
   max-width: var(--container);
