@@ -260,11 +260,6 @@ section {
   background: var(--bg);
 }
 
-[data-theme="light"] .hero-bg-grid {
-  background-image:
-    linear-gradient(rgba(101, 88, 232, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(101, 88, 232, 0.06) 1px, transparent 1px);
-}
 
 /* ================================================
    THEME TOGGLE BUTTON
@@ -504,14 +499,7 @@ section {
 }
 
 .hero-bg-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(124, 110, 247, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124, 110, 247, 0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-  pointer-events: none;
+  display: none;
 }
 
 .hero-glow {
@@ -526,7 +514,7 @@ section {
   filter: blur(40px);
 }
 
-/* ---- Hero gradient orbs (mouse-reactive swirl) ---- */
+/* ---- Hero gradient orbs (ambient background glow) ---- */
 .hero-orb {
   position: absolute;
   top: 0;

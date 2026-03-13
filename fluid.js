@@ -169,7 +169,11 @@ void main(){
 precision highp float;
 varying vec2 vUv;
 uniform sampler2D uTexture;
-void main(){ gl_FragColor = texture2D(uTexture,vUv); }`;
+void main(){
+  vec4 c = texture2D(uTexture,vUv);
+  float alpha = max(max(c.r,c.g),c.b);
+  gl_FragColor = vec4(c.rgb, alpha);
+}`;
 
   const clearFrag = `
 precision highp float;
