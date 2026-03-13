@@ -391,16 +391,20 @@ void main(){
     dye.swap();
   }
 
-  // Seed initial splats so the canvas isn't blank on load
-  function seedSplats() {
-    const w = canvas.width, h = canvas.height, f = CFG.SPLAT_FORCE * 0.8;
-    [
-      { x: w*0.20, y: h*0.35, dx:  0.4*f, dy:  0.2*f, c: PALETTE[0]  },  // teal
-      { x: w*0.75, y: h*0.40, dx: -0.3*f, dy:  0.3*f, c: PALETTE[2]  },  // indigo
-      { x: w*0.50, y: h*0.65, dx:  0.2*f, dy: -0.4*f, c: PALETTE[4]  },  // rose
-      { x: w*0.35, y: h*0.55, dx: -0.2*f, dy: -0.2*f, c: PALETTE[1]  },  // blue
-      { x: w*0.65, y: h*0.25, dx:  0.1*f, dy:  0.3*f, c: PALETTE[8]  },  // violet
-    ].forEach(s => splat(s.x, s.y, s.dx, s.dy, s.c));
+  // Burst of splats — used on load and on the periodic timer
+  function burstSplats() {
+    const w = canvas.width, h = canvas.height;
+    const f = CFG.SPLAT_FORCE * 0.8;
+    const count = 4 + Math.floor(Math.random() * 3); // 4–6 splats per burst
+    for (let i = 0; i < count; i++) {
+      const x     = w * (0.1 + Math.random() * 0.8);
+      const y     = h * (0.1 + Math.random() * 0.8);
+      const angle = Math.random() * Math.PI * 2;
+      const mag   = f * (0.5 + Math.random() * 0.7);
+      splat(x, y, Math.cos(angle) * mag, Math.sin(angle) * mag, nextColour());
+    }
+    // Schedule next burst in 5–10 s
+    setTimeout(burstSplats, 5000 + Math.random() * 5000);
   }
 
   // ── Simulation step ───────────────────────────────────────
@@ -498,7 +502,7 @@ void main(){
     requestAnimationFrame(loop);
   }
 
-  seedSplats();
+  burstSplats();
   requestAnimationFrame(loop);
 
   // ── Mouse / touch input ───────────────────────────────────
