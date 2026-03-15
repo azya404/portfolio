@@ -7,6 +7,65 @@
   <meta name="description"
     content="Haasya Shah — AI/ML, Game Dev, and creative technologist. Explore my projects and get in touch." />
   <title>Haasya Shah · Portfolio</title>
+
+  <!-- ── SEO & Discoverability ─────────────────────────────────────────────── -->
+  <link rel="canonical" href="https://haasyashah.dev/" />
+  <meta name="author" content="Haasya Shah" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#050d1a" />
+
+  <!-- Sitemap discovery -->
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+  <!-- Open Graph (Facebook, LinkedIn, Discord, Slack previews) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://haasyashah.dev/" />
+  <meta property="og:title" content="Haasya Shah · Portfolio" />
+  <meta property="og:description" content="Haasya Shah — AI/ML, Game Dev, and creative technologist. Explore my projects and get in touch." />
+  <meta property="og:site_name" content="Haasya Shah" />
+  <meta property="og:locale" content="en_CA" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Haasya Shah · Portfolio" />
+  <meta name="twitter:description" content="Haasya Shah — AI/ML, Game Dev, and creative technologist. Explore my projects and get in touch." />
+
+  <!-- JSON-LD Structured Data (Google rich results + AI knowledge graph) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://haasyashah.dev/#person",
+        "name": "Haasya Shah",
+        "url": "https://haasyashah.dev/",
+        "jobTitle": "AI/ML Developer & Game Developer",
+        "description": "AI/ML developer, game developer, and creative technologist based between Canada and Kenya.",
+        "sameAs": [
+          "https://github.com/azya404",
+          "https://haasyashah.itch.io/",
+          "https://www.instagram.com/404realities"
+        ],
+        "alumniOf": {
+          "@type": "CollegeOrUniversity",
+          "name": "University of Alberta"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://haasyashah.dev/#website",
+        "url": "https://haasyashah.dev/",
+        "name": "Haasya Shah · Portfolio",
+        "description": "Personal portfolio of Haasya Shah — AI/ML, Game Dev, and creative technologist.",
+        "author": { "@id": "https://haasyashah.dev/#person" },
+        "inLanguage": "en-CA"
+      }
+    ]
+  }
+  </script>
+
+  <!-- ── Fonts ──────────────────────────────────────────────────────────────── -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -16,6 +75,13 @@
 </head>
 
 <body>
+
+  <!-- Custom cursor (desktop only) -->
+  <div id="cursor-dot" aria-hidden="true"></div>
+  <div id="cursor-ring" aria-hidden="true"></div>
+
+  <!-- Scroll progress bar — sits above the navbar -->
+  <div id="scroll-progress" aria-hidden="true"></div>
 
   <!-- ========== NAV ========== -->
   <nav id="navbar">
@@ -69,6 +135,12 @@
   <section id="hero">
     <div class="hero-bg-grid"></div>
     <div class="hero-glow"></div>
+    <!-- Ambient colour orbs — static background glow -->
+    <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-3" aria-hidden="true"></div>
+    <!-- WebGL fluid simulation canvas -->
+    <canvas id="fluid-canvas" aria-hidden="true"></canvas>
     <div class="hero-content">
       <div class="hero-tag">
         <span class="tag-dot"></span>
@@ -431,6 +503,7 @@
   </footer>
 
   <script src="script.js"></script>
+  <script src="fluid.js" defer></script>
 </body>
 
 </html>

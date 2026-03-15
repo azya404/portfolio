@@ -1,0 +1,33 @@
+# Haasya Shah — Portfolio
+
+> AI/ML developer, game developer, and creative technologist.
+> Personal portfolio at https://haasyashah.dev
+
+## About
+
+Haasya Shah is a developer with a focus on AI/ML systems, game development, and creative
+technology. Based between Canada and Kenya, currently studying at the University of Alberta.
+
+## Sections
+
+- **Hero** — Introduction and quick links
+- **About** — Background, education, and interests
+- **Projects** — Shipped games and technical projects (itch.io + GitHub)
+- **Skills** — Languages, tools, and technologies
+- **Contact** — Email and social links
+
+## Projects
+
+Haasya's projects span game development and AI/ML work. Games are published on itch.io at
+https://haasyashah.itch.io/ and source code is on GitHub at https://github.com/azya404.
+
+## Social & Contact
+
+- GitHub: https://github.com/azya404
+- itch.io: https://haasyashah.itch.io/
+- Instagram: https://www.instagram.com/404realities
+
+## Technical
+
+This site is a pure HTML/CSS/JS single-page application with no frameworks or build tools.
+Hosted on Vercel. Source: https://github.com/azya404/portfolio

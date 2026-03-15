@@ -147,6 +147,22 @@
   setTimeout(nextStep, 700);
 })();
 
+/* ---- Scroll progress bar (lerp-smoothed) ---- */
+const scrollProgress = document.getElementById('scroll-progress');
+let scrollTarget = 0;
+let scrollCurrent = 0;
+
+window.addEventListener('scroll', () => {
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  scrollTarget = total > 0 ? (window.scrollY / total) * 100 : 0;
+}, { passive: true });
+
+(function tickProgress() {
+  scrollCurrent += (scrollTarget - scrollCurrent) * 0.1;
+  scrollProgress.style.width = scrollCurrent.toFixed(3) + '%';
+  requestAnimationFrame(tickProgress);
+})();
+
 /* ---- Navbar scroll effect ---- */
 const navbar = document.getElementById('navbar');
 const navToggle = document.getElementById('navToggle');
@@ -330,3 +346,44 @@ document.querySelectorAll('.project-card').forEach(card => {
     card.style.transition = 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
   });
 });
+
+/* ---- Custom cursor ---- */
+(function initCursor() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring) return;
+
+  let visible = false;
+
+  document.addEventListener('mousemove', (e) => {
+    dot.style.left  = e.clientX + 'px';
+    dot.style.top   = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px';
+    ring.style.top  = e.clientY + 'px';
+    if (!visible) {
+      visible = true;
+      dot.style.opacity  = '1';
+      ring.style.opacity = '1';
+    }
+  }, { passive: true });
+
+  // Expand ring on interactive elements
+  const interactives = 'a, button, [role="button"], .project-card, .nav-link, .nav-cta';
+  document.querySelectorAll(interactives).forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+
+  // Hide when cursor leaves the window
+  document.addEventListener('mouseleave', () => {
+    dot.style.opacity = '0';
+    ring.style.opacity = '0';
+    visible = false;
+  });
+
+  // Start hidden — revealed on first mousemove
+  dot.style.opacity = '0';
+  ring.style.opacity = '0';
+})();
