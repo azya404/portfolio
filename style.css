@@ -1398,3 +1398,88 @@ section {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   SOCIAL SIDEBAR
+   Fixed pill dock · left edge · vertically centred
+   ============================================ */
+
+.social-sidebar {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border-radius: 999px;
+  z-index: 90;
+  /* pill bg & glow transition */
+  background: transparent;
+  box-shadow: none;
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+}
+
+.social-sidebar:hover {
+  background: rgba(74, 240, 196, 0.07);
+  box-shadow:
+    0 0 0 1px rgba(74, 240, 196, 0.2),
+    0 0 28px rgba(74, 240, 196, 0.13);
+}
+
+/* light mode pill */
+[data-theme="light"] .social-sidebar:hover {
+  background: rgba(10, 140, 106, 0.08);
+  box-shadow:
+    0 0 0 1px rgba(10, 140, 106, 0.22),
+    0 0 28px rgba(10, 140, 106, 0.12);
+}
+
+/* individual icon links */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: rgba(221, 238, 255, 0.35);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-link:hover {
+  color: var(--accent);
+  transform: scale(1.18);
+}
+
+[data-theme="light"] .sidebar-link {
+  color: rgba(13, 27, 46, 0.32);
+}
+
+/* standard SVG sizing */
+.sidebar-link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Zindi — narrow tall logo; let height drive, keep brand colours */
+.sidebar-link[aria-label="Zindi"] svg {
+  width: auto;
+  height: 22px;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-link[aria-label="Zindi"]:hover svg {
+  opacity: 1;
+}
+
+/* hide on mobile — links live in hamburger menu instead */
+@media (max-width: 768px) {
+  .social-sidebar {
+    display: none;
+  }
+}
