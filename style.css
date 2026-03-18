@@ -1374,8 +1374,8 @@ section {
 .sidebar-link::before {
   content: '';
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
   background: transparent;
   top: 50%;
