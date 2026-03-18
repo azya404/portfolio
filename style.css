@@ -1325,8 +1325,9 @@ section {
   flex-direction: column;
   align-items: stretch;
   gap: 4px;
-  padding: 12px 8px;
+  padding: 12px 0;
   border-radius: 999px;
+  overflow: hidden;
   z-index: 90;
   background: transparent;
   box-shadow: none;
@@ -1355,11 +1356,8 @@ section {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(100% + 16px);
-  margin-left: -8px;
-  margin-right: -8px;
+  width: 100%;
   height: 36px;
-  border-radius: 999px;
   color: rgba(221, 238, 255, 0.35);
   background: transparent;
   transition: color 0.2s ease, background 0.2s ease, filter 0.2s ease;
