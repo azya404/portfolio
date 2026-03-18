@@ -1314,14 +1314,13 @@ section {
 
 /* ============================================
    SOCIAL SIDEBAR
-   Fixed pill dock · left edge · vertically centred
+   Fixed pill dock · bottom left
    ============================================ */
 
 .social-sidebar {
   position: fixed;
-  left: 24px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 32px;
+  bottom: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
