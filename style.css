@@ -1335,9 +1335,9 @@ section {
   transition: background 0.35s ease, box-shadow 0.35s ease;
 }
 
-/* container hover — light green, less intense than active accent */
+/* container hover — soft lavender, complements active teal */
 .social-sidebar:hover {
-  background: #b7f5e0;
+  background: #c5b8f5;
   box-shadow: 0 0 32px rgba(74, 240, 196, 0.25);
 }
 
