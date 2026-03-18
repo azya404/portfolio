@@ -1346,14 +1346,18 @@ section {
   color: var(--bg);
 }
 
-/* active icon — mini pill fills sidebar width, strong teal */
+/* active icon — circle via pseudo-element, clipped by container overflow */
 .social-sidebar:hover .sidebar-link:hover {
-  background: var(--accent);
   color: var(--bg);
+}
+
+.social-sidebar:hover .sidebar-link:hover::before {
+  background: var(--accent);
 }
 
 /* individual icon links */
 .sidebar-link {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1361,10 +1365,30 @@ section {
   margin-left: -8px;
   margin-right: -8px;
   height: 36px;
-  border-radius: 999px;
   color: rgba(221, 238, 255, 0.35);
   background: transparent;
-  transition: color 0.2s ease, background 0.2s ease, filter 0.2s ease;
+  transition: color 0.2s ease, filter 0.2s ease;
+}
+
+/* large circle pseudo-element — left/right clipped by container to give capsule shape */
+.sidebar-link::before {
+  content: '';
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: transparent;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: background 0.2s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sidebar-link svg {
+  position: relative;
+  z-index: 1;
 }
 
 .sidebar-link:hover {
