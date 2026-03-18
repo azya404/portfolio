@@ -1335,9 +1335,9 @@ section {
   transition: background 0.35s ease, box-shadow 0.35s ease;
 }
 
-/* container hover — yellow-lime, complements active teal */
+/* container hover — forest green, complements active teal */
 .social-sidebar:hover {
-  background: #d4f5b0;
+  background: #0a8c6a;
   box-shadow: 0 0 32px rgba(74, 240, 196, 0.25);
 }
 
