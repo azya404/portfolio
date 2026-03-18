@@ -1335,9 +1335,9 @@ section {
   transition: background 0.35s ease, box-shadow 0.35s ease;
 }
 
-/* container hover — muted dark teal, not the full accent */
+/* container hover — light green, less intense than active accent */
 .social-sidebar:hover {
-  background: #0d2825;
+  background: #b7f5e0;
   box-shadow: 0 0 32px rgba(74, 240, 196, 0.25);
 }
 
