@@ -551,25 +551,39 @@ void main(){
   // ── Debug panel (branch-preview only — remove before merge) ──
   (function buildDebugPanel() {
     const params = [
-      { key: 'SIM_RESOLUTION',       min: 32,   max: 256,  step: 32,   label: 'Sim Res' },
-      { key: 'DYE_RESOLUTION',       min: 128,  max: 2048, step: 128,  label: 'Dye Res' },
-      { key: 'DENSITY_DISSIPATION',  min: 0.50, max: 1.00, step: 0.01, label: 'Density Diss' },
-      { key: 'VELOCITY_DISSIPATION', min: 0.50, max: 5.00, step: 0.05, label: 'Velocity Diss' },
-      { key: 'PRESSURE',             min: 0.00, max: 1.00, step: 0.05, label: 'Pressure' },
-      { key: 'PRESSURE_ITERATIONS',  min: 5,    max: 40,   step: 1,    label: 'Pressure Iter' },
-      { key: 'CURL',                 min: 0,    max: 50,   step: 1,    label: 'Curl' },
-      { key: 'SPLAT_RADIUS',         min: 0.05, max: 0.50, step: 0.01, label: 'Splat Radius' },
-      { key: 'SPLAT_FORCE',          min: 500,  max: 12000,step: 500,  label: 'Splat Force' },
+      { key: 'SIM_RESOLUTION',       min: 32,   max: 256,   step: 32,   label: 'SIM_RESOLUTION' },
+      { key: 'DYE_RESOLUTION',       min: 128,  max: 2048,  step: 128,  label: 'DYE_RESOLUTION' },
+      { key: 'DENSITY_DISSIPATION',  min: 0.50, max: 1.00,  step: 0.01, label: 'DENSITY_DISSIPATION' },
+      { key: 'VELOCITY_DISSIPATION', min: 0.50, max: 5.00,  step: 0.05, label: 'VELOCITY_DISSIPATION' },
+      { key: 'PRESSURE',             min: 0.00, max: 1.00,  step: 0.05, label: 'PRESSURE' },
+      { key: 'PRESSURE_ITERATIONS',  min: 5,    max: 40,    step: 1,    label: 'PRESSURE_ITERATIONS' },
+      { key: 'CURL',                 min: 0,    max: 50,    step: 1,    label: 'CURL' },
+      { key: 'SPLAT_RADIUS',         min: 0.05, max: 0.50,  step: 0.01, label: 'SPLAT_RADIUS' },
+      { key: 'SPLAT_FORCE',          min: 500,  max: 12000, step: 500,  label: 'SPLAT_FORCE' },
     ];
+
+    const PRESETS = {
+      mine: {
+        SIM_RESOLUTION: 128, DYE_RESOLUTION: 1024, DENSITY_DISSIPATION: 0.98,
+        VELOCITY_DISSIPATION: 0.90, PRESSURE: 0.8, PRESSURE_ITERATIONS: 20,
+        CURL: 25, SPLAT_RADIUS: 0.18, SPLAT_FORCE: 6000,
+      },
+      toukoum: {
+        SIM_RESOLUTION: 128, DYE_RESOLUTION: 1440, DENSITY_DISSIPATION: 0.5,
+        VELOCITY_DISSIPATION: 3, PRESSURE: 0.1, PRESSURE_ITERATIONS: 20,
+        CURL: 3, SPLAT_RADIUS: 0.2, SPLAT_FORCE: 6000,
+      },
+    };
 
     const panel = document.createElement('div');
     panel.id = 'fluid-debug';
     Object.assign(panel.style, {
       position: 'fixed', bottom: '16px', right: '16px', zIndex: 9999,
       background: 'rgba(5,13,26,0.92)', border: '1px solid #4af0c4',
-      borderRadius: '10px', padding: '12px 16px', color: '#ddeeff',
-      fontFamily: 'monospace', fontSize: '12px', width: '240px',
+      borderRadius: '10px', padding: '14px 14px 10px', color: '#ddeeff',
+      fontFamily: 'monospace', fontSize: '12px', width: '260px',
       boxShadow: '0 4px 24px rgba(0,0,0,0.6)', userSelect: 'none',
+      boxSizing: 'border-box',
     });
 
     const title = document.createElement('div');
@@ -578,24 +592,42 @@ void main(){
     panel.appendChild(title);
 
     const resolutionKeys = new Set(['SIM_RESOLUTION', 'DYE_RESOLUTION']);
+    const sliderMap = {};
+
+    function applyPreset(preset) {
+      Object.entries(preset).forEach(([key, v]) => {
+        CFG[key] = v;
+        if (sliderMap[key]) {
+          sliderMap[key].slider.value = v;
+          sliderMap[key].val.textContent = v;
+        }
+        if (resolutionKeys.has(key)) initBuffers();
+      });
+    }
 
     params.forEach(({ key, min, max, step, label }) => {
-      const row = document.createElement('div');
-      Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' });
+      const wrap = document.createElement('div');
+      Object.assign(wrap.style, { marginBottom: '8px' });
+
+      const top = document.createElement('div');
+      Object.assign(top.style, { display: 'flex', justifyContent: 'space-between', marginBottom: '2px' });
 
       const lbl = document.createElement('span');
       lbl.textContent = label;
-      Object.assign(lbl.style, { flex: '0 0 110px', fontSize: '11px', color: '#aac' });
+      Object.assign(lbl.style, { fontSize: '10px', color: '#7ac' });
+
+      const val = document.createElement('span');
+      val.textContent = CFG[key];
+      Object.assign(val.style, { fontSize: '10px', color: '#4af0c4' });
+
+      top.appendChild(lbl);
+      top.appendChild(val);
 
       const slider = document.createElement('input');
       slider.type = 'range';
       slider.min = min; slider.max = max; slider.step = step;
       slider.value = CFG[key];
-      Object.assign(slider.style, { flex: '1', accentColor: '#4af0c4' });
-
-      const val = document.createElement('span');
-      val.textContent = CFG[key];
-      Object.assign(val.style, { flex: '0 0 38px', textAlign: 'right', fontSize: '11px' });
+      Object.assign(slider.style, { width: '100%', accentColor: '#4af0c4', display: 'block', boxSizing: 'border-box' });
 
       slider.addEventListener('input', () => {
         const v = parseFloat(slider.value);
@@ -604,11 +636,35 @@ void main(){
         if (resolutionKeys.has(key)) initBuffers();
       });
 
-      row.appendChild(lbl);
-      row.appendChild(slider);
-      row.appendChild(val);
-      panel.appendChild(row);
+      sliderMap[key] = { slider, val };
+      wrap.appendChild(top);
+      wrap.appendChild(slider);
+      panel.appendChild(wrap);
     });
+
+    // ── Preset buttons ────────────────────────────────────────
+    const btnRow = document.createElement('div');
+    Object.assign(btnRow.style, { display: 'flex', gap: '8px', marginTop: '10px' });
+
+    const btnStyle = {
+      flex: '1', padding: '5px 0', border: '1px solid #4af0c4', borderRadius: '6px',
+      background: 'transparent', color: '#4af0c4', fontFamily: 'monospace',
+      fontSize: '10px', cursor: 'pointer', textAlign: 'center',
+    };
+
+    const btnMine = document.createElement('button');
+    btnMine.textContent = 'my defaults';
+    Object.assign(btnMine.style, btnStyle);
+    btnMine.addEventListener('click', () => applyPreset(PRESETS.mine));
+
+    const btnToukoum = document.createElement('button');
+    btnToukoum.textContent = "toukoum's";
+    Object.assign(btnToukoum.style, btnStyle);
+    btnToukoum.addEventListener('click', () => applyPreset(PRESETS.toukoum));
+
+    btnRow.appendChild(btnMine);
+    btnRow.appendChild(btnToukoum);
+    panel.appendChild(btnRow);
 
     document.body.appendChild(panel);
   })();
