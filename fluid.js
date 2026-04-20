@@ -540,9 +540,78 @@ void main(){
     requestAnimationFrame(loop);
   }
 
-  // Fire an initial burst right away (hero starts in viewport on load)
-  burstSplats();
-  requestAnimationFrame(loop);
+  // ── Lazy init — loop only starts on first hero interaction ───
+  let simStarted = false;
+  function startSim() {
+    if (simStarted) return;
+    simStarted = true;
+    requestAnimationFrame(loop);
+  }
+
+  // ── Debug panel (branch-preview only — remove before merge) ──
+  (function buildDebugPanel() {
+    const params = [
+      { key: 'SIM_RESOLUTION',       min: 32,   max: 256,  step: 32,   label: 'Sim Res' },
+      { key: 'DYE_RESOLUTION',       min: 128,  max: 2048, step: 128,  label: 'Dye Res' },
+      { key: 'DENSITY_DISSIPATION',  min: 0.50, max: 1.00, step: 0.01, label: 'Density Diss' },
+      { key: 'VELOCITY_DISSIPATION', min: 0.50, max: 5.00, step: 0.05, label: 'Velocity Diss' },
+      { key: 'PRESSURE',             min: 0.00, max: 1.00, step: 0.05, label: 'Pressure' },
+      { key: 'PRESSURE_ITERATIONS',  min: 5,    max: 40,   step: 1,    label: 'Pressure Iter' },
+      { key: 'CURL',                 min: 0,    max: 50,   step: 1,    label: 'Curl' },
+      { key: 'SPLAT_RADIUS',         min: 0.05, max: 0.50, step: 0.01, label: 'Splat Radius' },
+      { key: 'SPLAT_FORCE',          min: 500,  max: 12000,step: 500,  label: 'Splat Force' },
+    ];
+
+    const panel = document.createElement('div');
+    panel.id = 'fluid-debug';
+    Object.assign(panel.style, {
+      position: 'fixed', bottom: '16px', right: '16px', zIndex: 9999,
+      background: 'rgba(5,13,26,0.92)', border: '1px solid #4af0c4',
+      borderRadius: '10px', padding: '12px 16px', color: '#ddeeff',
+      fontFamily: 'monospace', fontSize: '12px', width: '240px',
+      boxShadow: '0 4px 24px rgba(0,0,0,0.6)', userSelect: 'none',
+    });
+
+    const title = document.createElement('div');
+    title.textContent = '⚙ fluid debug';
+    Object.assign(title.style, { color: '#4af0c4', marginBottom: '10px', fontWeight: 'bold', fontSize: '13px' });
+    panel.appendChild(title);
+
+    const resolutionKeys = new Set(['SIM_RESOLUTION', 'DYE_RESOLUTION']);
+
+    params.forEach(({ key, min, max, step, label }) => {
+      const row = document.createElement('div');
+      Object.assign(row.style, { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' });
+
+      const lbl = document.createElement('span');
+      lbl.textContent = label;
+      Object.assign(lbl.style, { flex: '0 0 110px', fontSize: '11px', color: '#aac' });
+
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.min = min; slider.max = max; slider.step = step;
+      slider.value = CFG[key];
+      Object.assign(slider.style, { flex: '1', accentColor: '#4af0c4' });
+
+      const val = document.createElement('span');
+      val.textContent = CFG[key];
+      Object.assign(val.style, { flex: '0 0 38px', textAlign: 'right', fontSize: '11px' });
+
+      slider.addEventListener('input', () => {
+        const v = parseFloat(slider.value);
+        CFG[key] = v;
+        val.textContent = v;
+        if (resolutionKeys.has(key)) initBuffers();
+      });
+
+      row.appendChild(lbl);
+      row.appendChild(slider);
+      row.appendChild(val);
+      panel.appendChild(row);
+    });
+
+    document.body.appendChild(panel);
+  })();
 
   // ── Mouse / touch input ───────────────────────────────────
   let px = 0, py = 0, moved = false;
@@ -575,8 +644,8 @@ void main(){
     }, INACTIVITY_MS);
   }
 
-  hero.addEventListener('mousemove',  (e) => onMove(e.clientX, e.clientY),                       { passive: true });
-  hero.addEventListener('touchmove',  (e) => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+  hero.addEventListener('mousemove',  (e) => { startSim(); onMove(e.clientX, e.clientY); },                       { passive: true });
+  hero.addEventListener('touchmove',  (e) => { startSim(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
 
   hero.addEventListener('mouseenter', () => { strokeColour = nextColour(); });
   hero.addEventListener('mouseleave', () => {
