@@ -31,7 +31,7 @@
 
   // Extended palette — dark-mode complementary colours, RGB 0-1
   const PALETTE = [
-    { r: 0.29,  g: 0.94,  b: 0.77  },  // teal         #4af0c4  (site accent)
+    { r: 0.22,  g: 0.48,  b: 1.00  },  // blue         #387aff
   ];
   let palIdx = 0;
   function nextColour() {
