@@ -32,17 +32,6 @@
   // Extended palette — dark-mode complementary colours, RGB 0-1
   const PALETTE = [
     { r: 0.29,  g: 0.94,  b: 0.77  },  // teal         #4af0c4  (site accent)
-    { r: 0.22,  g: 0.48,  b: 1.00  },  // blue         #387aff
-    { r: 0.55,  g: 0.36,  b: 0.96  },  // indigo       #8c5cf5
-    { r: 0.00,  g: 0.75,  b: 1.00  },  // cyan         #00bfff
-    { r: 0.96,  g: 0.25,  b: 0.40  },  // rose-red     #f54066
-    { r: 1.00,  g: 0.55,  b: 0.10  },  // amber        #ff8c1a
-    { r: 1.00,  g: 0.85,  b: 0.20  },  // yellow       #ffd933
-    { r: 0.90,  g: 0.30,  b: 0.80  },  // hot pink     #e64dcc
-    { r: 0.70,  g: 0.20,  b: 0.95  },  // violet       #b233f2
-    { r: 0.20,  g: 0.90,  b: 0.40  },  // lime green   #33e666
-    { r: 0.95,  g: 0.95,  b: 0.90  },  // off-white    #f2f2e6
-    { r: 0.00,  g: 0.85,  b: 0.65  },  // emerald      #00d9a6
   ];
   let palIdx = 0;
   function nextColour() {
